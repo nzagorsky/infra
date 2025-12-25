@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: "postgres:18.1"
+    container_name: postgres
+    restart: unless-stopped
+    ports: 
+      - 5432:5432
+    environment:
+      - "POSTGRES_DB=postgres"
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=postgres"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+volumes:
+  postgres_data:
+    driver: local
+    name: postgres_data
