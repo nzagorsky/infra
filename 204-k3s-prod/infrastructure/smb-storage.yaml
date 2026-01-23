@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-synology-media
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: smb
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=1001
+    - gid=1001
+    - vers=3.0
+    - noperm
+    - mfsymlinks
+    - cache=strict
+    - noserverino
+  csi:
+    driver: smb.csi.k8s.io
+    readOnly: false
+    volumeHandle: synology-media-pv-1
+    volumeAttributes:
+      source: "//nas.lab.${BASE_DOMAIN:=example.com}/media"
+    nodeStageSecretRef:
+      name: smb-creds
+      namespace: media
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: synology-media
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: pv-synology-media
+  storageClassName: smb
