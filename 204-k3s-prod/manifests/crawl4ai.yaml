@@ -1,0 +1,100 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: crawl4ai
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawl4ai
+  namespace: crawl4ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crawl4ai
+  template:
+    metadata:
+      labels:
+        app: crawl4ai
+    spec:
+      containers:
+        - name: crawl4ai
+          image: unclecode/crawl4ai:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 11235
+              protocol: TCP
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 11235
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 11235
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crawl4ai
+  namespace: crawl4ai
+spec:
+  selector:
+    app: crawl4ai
+  ports:
+    - name: http
+      port: 11235
+      targetPort: http
+      protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: crawl4ai
+  namespace: crawl4ai
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - crawl.home.${BASE_DOMAIN:=example.com}
+      secretName: wildcard-home-tls
+  rules:
+    - host: crawl.home.${BASE_DOMAIN:=example.com}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: crawl4ai
+                port:
+                  number: 11235
