@@ -1,0 +1,191 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: searxng
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: searxng-data
+  namespace: searxng
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: searxng-settings
+  namespace: searxng
+data:
+  settings.yml: |
+    use_default_settings: true
+    search:
+      formats:
+        - html
+        - json
+        - csv
+        - rss
+      autocomplete: duckduckgo
+      autocomplete_min: 2
+      safe_search: 0
+    engines:
+      - name: google
+        engine: google
+        shortcut: go
+        disabled: false
+      - name: bing
+        engine: bing
+        shortcut: bi
+        disabled: false
+      - name: duckduckgo
+        engine: duckduckgo
+        shortcut: ddg
+        disabled: false
+      - name: yahoo
+        engine: yahoo
+        shortcut: yh
+        disabled: false
+      - name: brave
+        engine: brave
+        shortcut: br
+        disabled: true
+      - name: wikipedia
+        engine: wikipedia
+        shortcut: wp
+        disabled: true
+      - name: github
+        engine: github
+        shortcut: gh
+        disabled: true
+      - name: reddit
+        engine: reddit
+        shortcut: re
+        disabled: false
+      - name: arxiv
+        engine: arxiv
+        shortcut: arx
+        disabled: false
+      - name: hackernews
+        engine: hackernews
+        shortcut: hn
+        disabled: false
+    outgoing:
+      request_timeout: 10.0
+      pool_connections: 200
+      pool_maxsize: 50
+      proxies:
+        all://:
+          - http://gluetun-proxy.gluetun.svc.cluster.local:8888
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: searxng
+  template:
+    metadata:
+      labels:
+        app: searxng
+    spec:
+      containers:
+        - name: searxng
+          image: docker.io/searxng/searxng:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SEARXNG_BASE_URL
+              value: "https://search.home.${BASE_DOMAIN:=example.com}"
+            - name: SEARXNG_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: searxng-secret
+                  key: SECRET_KEY
+            - name: SEARXNG_BIND_ADDRESS
+              value: "0.0.0.0:8080"
+            - name: SEARXNG_LIMITER
+              value: "false"
+            - name: SEARXNG_IMAGE_PROXY
+              value: "true"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: searxng-data
+              mountPath: /var/cache/searxng
+            - name: searxng-settings
+              mountPath: /etc/searxng/
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: searxng-data
+          persistentVolumeClaim:
+            claimName: searxng-data
+        - name: searxng-settings
+          configMap:
+            name: searxng-settings
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  selector:
+    app: searxng
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: searxng
+  namespace: searxng
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - search.home.${BASE_DOMAIN:=example.com}
+      secretName: wildcard-home-tls
+  rules:
+    - host: search.home.${BASE_DOMAIN:=example.com}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: searxng
+                port:
+                  number: 8080
