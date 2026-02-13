@@ -1,0 +1,90 @@
+services:
+  cloudflare_ddns:
+    image: oznu/cloudflare-ddns:latest
+    container_name: cloudflare_ddns
+    restart: unless-stopped
+    environment:
+      TZ: UTC
+      API_KEY: ${CLOUDFLARE_DDNS_KEY:?Error Set cloudflare token}
+      ZONE: ${BASE_DOMAIN:?Set base domain}
+      SUBDOMAIN: "minecraft"
+      PROXIED: "false"
+      RRTYPE: A
+
+  restore-backup:
+    container_name: "restore_mc"
+    # Same image as mc, but any base image with bash and tar will work
+    image: itzg/mc-backup
+    restart: "no"
+    depends_on:
+      - s3fs
+    entrypoint: restore-tar-backup
+    volumes:
+      - /srv/minecraft:/data
+      - /mnt/minecraft/b2:/backups
+
+  backups:
+    image: itzg/mc-backup
+    container_name: minecraft_backup
+    depends_on:
+      minecraft:
+        condition: service_healthy
+    environment:
+      BACKUP_INTERVAL: "24h"
+      PRUNE_BACKUPS_DAYS: "7"
+      RCON_HOST: minecraft
+      INITIAL_DELAY: 120 # seconds
+    volumes:
+      - /srv/minecraft:/data
+      - /mnt/minecraft/b2:/backups
+
+  minecraft:
+    image: itzg/minecraft-server:2025.12.0-java21
+    tty: true
+    stdin_open: true
+    container_name: minecraft
+    restart: unless-stopped
+    depends_on:
+      restore-backup:
+        condition: service_completed_successfully
+    ports:
+      - "25565:25565"
+    volumes:
+      - "/srv/minecraft:/data"
+    environment:
+      EULA: "TRUE"
+      MOD_PLATFORM: MODRINTH
+      # https://modrinth.com/modpack/sop/
+      MODRINTH_MODPACK: "https://modrinth.com/modpack/sop/version/1.21.11-3.1.1"
+
+      VIEW_DISTANCE: 48
+      ONLINE_MODE: "TRUE"
+      MEMORY: 2G
+      MOTD: "Get the fuck out of here"
+      DIFFICULTY: "normal"
+      MAX_WORLD_SIZE: 8000
+      SNOOPER_ENABLED: "false"
+      ALLOW_FLIGHT: "FALSE"
+
+      WHITELIST: "cohonespro,AncrosRus"
+      ENABLE_WHITELIST: "true"
+      OVERRIDE_WHITELIST: "true"
+
+  s3fs:
+    container_name: s3fs
+    image: efrecon/s3fs:1.91
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    devices:
+      - /dev/fuse
+    volumes:
+      - /mnt/minecraft/b2:/opt/s3fs/bucket:rshared
+    environment:
+      AWS_S3_BUCKET: "${AWS_S3_BUCKET?AWS_S3_BUCKET is required}"
+      AWS_S3_ACCESS_KEY_ID: "${AWS_S3_ACCESS_KEY_ID?AWS_S3_ACCESS_KEY_ID is required}"
+      AWS_S3_SECRET_ACCESS_KEY: "${AWS_S3_SECRET_ACCESS_KEY?AWS_S3_SECRET_ACCESS_KEY is required}"
+      AWS_S3_URL: "${AWS_S3_URL?AWS_S3_URL is required}"
+      AWS_S3_MOUNT: "/opt/s3fs/bucket"
