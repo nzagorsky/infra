@@ -31,7 +31,7 @@ metadata:
   name: jellyfin
   namespace: media
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: jellyfin

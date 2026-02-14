@@ -23,7 +23,7 @@ metadata:
   name: n8n
   namespace: n8n
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: n8n
