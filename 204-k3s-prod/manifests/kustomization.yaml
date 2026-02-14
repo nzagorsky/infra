@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - jellyfin.yaml
   - transmission.yaml
-  - n8n.yaml
   - proxy.yaml
   - searxng.yaml
   - crawl4ai.yaml

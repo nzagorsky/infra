@@ -15,7 +15,6 @@
 
 ## Namespaces
 - `media`: Jellyfin, Transmission
-- `n8n`: Workflows
 - `gluetun`: VPN proxy
 - `searxng`: Search
 - `crawl4ai`: Web crawling

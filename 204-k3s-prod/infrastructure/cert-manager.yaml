@@ -27,7 +27,7 @@ spec:
     annotations:
       reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
       reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "n8n,media,searxng,crawl4ai"
+      reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "media,searxng,crawl4ai"
   issuerRef:
     name: letsencrypt-cloudflare
     kind: ClusterIssuer
