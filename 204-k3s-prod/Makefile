@@ -8,7 +8,6 @@ endif
 
 HOST = $(K3S_PROD_HOST)
 SSH_PATH = $(INFRA_SSH_USER)@$(HOST)
-FLUX_PRIVATE_KEY = $$(HOME)/.ssh/flux_gitlab_deploy_key
 
 # Server setup
 up:
@@ -55,7 +54,7 @@ secrets:
 		--dry-run=client -o yaml | kubectl apply -f -
 
 bootstrap:
-	flux bootstrap git --url=ssh://git@gitlab.com/nzagorsky/infra --branch=master --path=204-k3s-prod --private-key-file=$(FLUX_PRIVATE_KEY)
+	flux bootstrap git --url=https://github.com/nzagorsky/infra.git --branch=master --path=204-k3s-prod
 
 cluster-vars:
 	: "$${BASE_DOMAIN:?BASE_DOMAIN is not set}"

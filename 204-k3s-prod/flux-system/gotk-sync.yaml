@@ -9,9 +9,7 @@ spec:
   interval: 1m0s
   ref:
     branch: master
-  secretRef:
-    name: flux-system
-  url: ssh://git@gitlab.com/nzagorsky/infra
+  url: https://github.com/nzagorsky/infra.git
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

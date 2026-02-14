@@ -8,7 +8,7 @@
 
 ## Infrastructure
 - **Cluster**: k3s
-- **GitOps**: FluxCD (syncs from gitlab.com/nzagorsky/infra)
+- **GitOps**: FluxCD (syncs from github.com/nzagorsky/infra)
 - **Ingress**: Traefik
 - **TLS**: Wildcard cert for `*.home.${BASE_DOMAIN:=example.com}` (cert-manager + Cloudflare DNS)
 - **Storage**: `nfs-storage` (primary) and `smb` (shared media)
