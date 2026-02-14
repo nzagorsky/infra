@@ -4,7 +4,7 @@ metadata:
   name: nfs-storage
 provisioner: nfs.csi.k8s.io
 parameters:
-  server: nfs.home.${BASE_DOMAIN:=example.com}
+  server: nfs.lab.${BASE_DOMAIN:=example.com}
   share: /srv/nfs/k8s
   subDir: $${pvc.metadata.namespace}-$${pvc.metadata.name}
   mountPermissions: "0777"
