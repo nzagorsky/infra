@@ -1,8 +1,15 @@
 locals {
-  firewall_vm_ids = setunion(
-    toset([for vm in local.vm_specs : tostring(vm.vm_id)]),
-    toset(["500"]),
-  )
+  firewall_vm_ids = toset([
+    "130",
+    "200",
+    "202",
+    "203",
+    "204",
+    "205",
+    "210",
+    "500",
+    "9001",
+  ])
 }
 
 resource "proxmox_virtual_environment_cluster_firewall" "cluster" {

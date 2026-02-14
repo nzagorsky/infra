@@ -1,5 +1,12 @@
 .PHONY: init init-remote migrate-state plan
 
+# The S3 backend expects AWS-style env vars. Our .env uses B2_* names.
+# Keep local workflow simple: after `source .env`, `make plan` should work.
+TOFU_ENV = \
+	AWS_EC2_METADATA_DISABLED=true \
+	AWS_ACCESS_KEY_ID="$${AWS_ACCESS_KEY_ID:-$${B2_TOFU_KEY_ID}}" \
+	AWS_SECRET_ACCESS_KEY="$${AWS_SECRET_ACCESS_KEY:-$${B2_TOFU_APPLICATION_KEY}}"
+
 B2_BACKEND_ARGS = \
 	-backend-config="bucket=$${B2_TOFU_STATE_BUCKET}" \
 	-backend-config="key=$${B2_TOFU_STATE_KEY}" \
@@ -15,13 +22,16 @@ B2_BACKEND_ARGS = \
 	-backend-config="skip_requesting_account_id=true"
 
 init:
-	tofu init
+	$(TOFU_ENV) tofu init
 
 init-remote:
-	tofu init -reconfigure $(B2_BACKEND_ARGS)
+	$(TOFU_ENV) tofu init -reconfigure $(B2_BACKEND_ARGS)
 
 migrate-state:
-	tofu init -migrate-state -force-copy $(B2_BACKEND_ARGS)
+	$(TOFU_ENV) tofu init -migrate-state -force-copy $(B2_BACKEND_ARGS)
 
 plan:
-	tofu plan
+	$(TOFU_ENV) tofu plan
+
+apply:
+	$(TOFU_ENV) tofu apply

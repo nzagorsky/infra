@@ -43,6 +43,14 @@ variable "vm_default_username" {
   default     = "nzagorsky"
 }
 
+variable "vm_default_ssh_keys" {
+  type        = list(string)
+  description = "Cloud-init SSH public keys for managed VMs"
+  default = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG/U9J4gbyz+Tu3MGcsgbSEA7I4T06+UA/66d7LD55uk",
+  ]
+}
+
 variable "vm_data_storage_ipv4_address" {
   type        = string
   description = "IPv4 CIDR for data-storage VM"
