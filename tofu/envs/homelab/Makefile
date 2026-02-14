@@ -1,6 +1,5 @@
 .PHONY: init init-remote migrate-state plan
 
-ENV_FILE ?= .env
 B2_BACKEND_ARGS = \
 	-backend-config="bucket=$${B2_TOFU_STATE_BUCKET}" \
 	-backend-config="key=$${B2_TOFU_STATE_KEY}" \
@@ -19,10 +18,10 @@ init:
 	tofu init
 
 init-remote:
-	set -a && . "./$(ENV_FILE)" && set +a && tofu init -reconfigure $(B2_BACKEND_ARGS)
+	tofu init -reconfigure $(B2_BACKEND_ARGS)
 
 migrate-state:
-	set -a && . "./$(ENV_FILE)" && set +a && tofu init -migrate-state -force-copy $(B2_BACKEND_ARGS)
+	tofu init -migrate-state -force-copy $(B2_BACKEND_ARGS)
 
 plan:
 	tofu plan
