@@ -53,7 +53,7 @@ secrets:
 	kubectl -n activepieces get secret activepieces-secret >/dev/null 2>&1 || \
 		kubectl -n activepieces create secret generic activepieces-secret \
 			--from-literal=POSTGRES_PASSWORD="$$(openssl rand -hex 32)" \
-			--from-literal=AP_ENCRYPTION_KEY="$$(openssl rand -hex 32)" \
+			--from-literal=AP_ENCRYPTION_KEY="$$(openssl rand -hex 16)" \
 			--from-literal=AP_JWT_SECRET="$$(openssl rand -hex 32)"
 	kubectl -n tailscale create secret generic tailscale-auth \
 		--from-literal=TS_AUTHKEY="$$TS_AUTHKEY" \
