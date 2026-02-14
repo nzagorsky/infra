@@ -3,6 +3,8 @@ proxmox_insecure   = true
 proxmox_node_name  = "pve-node-1"
 proxmox_dns_domain = "internal.example.invalid"
 proxmox_time_zone  = "UTC"
+cloudflare_zone_id = "00000000000000000000000000000000"
+nas_lab_ipv4_address = "198.51.100.15"
 
 vm_default_username = "operator"
 vm_data_storage_ipv4_address    = "10.0.10.202/24"

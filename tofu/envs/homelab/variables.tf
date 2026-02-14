@@ -27,6 +27,16 @@ variable "proxmox_time_zone" {
   default     = "America/New_York"
 }
 
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "Cloudflare zone ID for homelab DNS records"
+}
+
+variable "nas_lab_ipv4_address" {
+  type        = string
+  description = "IPv4 address for nas.lab DNS record"
+}
+
 variable "vm_default_username" {
   type        = string
   description = "Cloud-init default username for managed VMs"
