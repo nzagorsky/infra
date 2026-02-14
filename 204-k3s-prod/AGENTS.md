@@ -4,7 +4,7 @@
 1. **Plan First**: create a plan in `plans/` (format: `YYYY-MM-DD-name.md`) before any code if the change is big
 2. **No Hardcoded Secrets**: Use `make secrets` to add them to the cluster
 3. **Follow Patterns**: Mimic existing deployments in `manifests/`
-4. **GitOps with FluxCD**: Flux automatically syncs all manifests from GitLab. Commit changes and they will be applied
+4. **GitOps with FluxCD**: Flux automatically syncs all manifests from GitHub. Commit changes and they will be applied
 
 ## Infrastructure
 - **Cluster**: k3s
