@@ -6,9 +6,6 @@ proxmox_time_zone  = "UTC"
 
 vm_default_username = "operator"
 vm_data_storage_ipv4_address    = "10.0.10.202/24"
-vm_data_db_ipv4_address         = "10.0.10.203/24"
-vm_k3s_prod_ipv4_address        = "10.0.10.204"
-vm_games_minecraft_ipv4_address = "10.0.10.210/24"
 vm_default_ipv4_gateway         = "10.0.10.1"
 
 vm_data_storage_mac_address    = "02:00:00:00:00:01"

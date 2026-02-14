@@ -40,17 +40,23 @@ variable "vm_data_storage_ipv4_address" {
 
 variable "vm_data_db_ipv4_address" {
   type        = string
-  description = "IPv4 CIDR for data-db VM"
+  description = "IPv4 CIDR for data-db VM (optional, derived from data-storage subnet when unset)"
+  default     = null
+  nullable    = true
 }
 
 variable "vm_games_minecraft_ipv4_address" {
   type        = string
-  description = "IPv4 CIDR for games-minecraft VM"
+  description = "IPv4 CIDR for games-minecraft VM (optional, derived from data-storage subnet when unset)"
+  default     = null
+  nullable    = true
 }
 
 variable "vm_k3s_prod_ipv4_address" {
   type        = string
-  description = "IPv4 address used by router DHCP reservation for k3s-prod"
+  description = "IPv4 address used by router DHCP reservation for k3s-prod (optional, derived from data-storage subnet when unset)"
+  default     = null
+  nullable    = true
 }
 
 variable "vm_default_ipv4_gateway" {

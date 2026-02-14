@@ -27,7 +27,6 @@ resource "proxmox_virtual_environment_vm" "data_storage" {
   purge_on_destroy                     = true
   reboot                               = false
   reboot_after_update                  = true
-  keyboard_layout                      = "en-us"
   scsi_hardware                        = "virtio-scsi-single"
   started                              = true
   stop_on_destroy                      = false
@@ -37,7 +36,6 @@ resource "proxmox_virtual_environment_vm" "data_storage" {
 
   agent {
     enabled = local.vm_agent_defaults.enabled
-    type    = local.vm_agent_defaults.type
     trim    = local.vm_agent_defaults.trim
     timeout = local.vm_agent_defaults.timeout
   }
@@ -151,7 +149,6 @@ resource "proxmox_virtual_environment_vm" "data_db" {
   purge_on_destroy                     = true
   reboot                               = false
   reboot_after_update                  = true
-  keyboard_layout                      = "en-us"
   scsi_hardware                        = "virtio-scsi-single"
   started                              = true
   stop_on_destroy                      = false
@@ -161,7 +158,6 @@ resource "proxmox_virtual_environment_vm" "data_db" {
 
   agent {
     enabled = local.vm_agent_defaults.enabled
-    type    = local.vm_agent_defaults.type
     trim    = local.vm_agent_defaults.trim
     timeout = local.vm_agent_defaults.timeout
   }
@@ -193,7 +189,7 @@ resource "proxmox_virtual_environment_vm" "data_db" {
 
     ip_config {
       ipv4 {
-        address = var.vm_data_db_ipv4_address
+        address = local.vm_data_db_ipv4_address
         gateway = var.vm_default_ipv4_gateway
       }
       ipv6 {
@@ -248,7 +244,7 @@ resource "proxmox_virtual_environment_vm" "k3s_prod" {
   name                                 = "k3s-prod"
   node_name                            = local.vm_node_name
   vm_id                                = 204
-  description                          = "Router DHCP bind to ${var.vm_k3s_prod_ipv4_address}"
+  description                          = "Router DHCP bind to ${local.vm_k3s_prod_ipv4_address}"
   acpi                                 = true
   bios                                 = "seabios"
   boot_order                           = ["scsi0"]
@@ -410,7 +406,7 @@ resource "proxmox_virtual_environment_vm" "games_minecraft" {
 
     ip_config {
       ipv4 {
-        address = var.vm_games_minecraft_ipv4_address
+        address = local.vm_games_minecraft_ipv4_address
         gateway = var.vm_default_ipv4_gateway
       }
       ipv6 {
