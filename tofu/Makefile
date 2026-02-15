@@ -1,4 +1,4 @@
-.PHONY: init init-remote migrate-state plan
+.PHONY: init init-remote migrate-state plan packer-init packer-fmt packer-build-ubuntu-24-04-nocloud
 
 # The S3 backend expects AWS-style env vars. Our .env uses B2_* names.
 # Keep local workflow simple: after `source .env`, `make plan` should work.
