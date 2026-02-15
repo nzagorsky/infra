@@ -48,6 +48,11 @@ output "vm_inventory" {
         node_name = proxmox_virtual_environment_vm.vm_500_tailscale.node_name
         name      = proxmox_virtual_environment_vm.vm_500_tailscale.name
       }
+      "501-tailscale-canary" = {
+        vm_id     = proxmox_virtual_environment_vm.vm_501_tailscale_canary.vm_id
+        node_name = proxmox_virtual_environment_vm.vm_501_tailscale_canary.node_name
+        name      = proxmox_virtual_environment_vm.vm_501_tailscale_canary.name
+      }
     },
   )
 }

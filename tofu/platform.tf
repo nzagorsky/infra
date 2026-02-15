@@ -1,7 +1,7 @@
 resource "proxmox_virtual_environment_storage_directory" "local" {
   id      = "local"
   path    = "/var/lib/vz"
-  content = ["backup", "iso", "vztmpl"]
+  content = ["backup", "iso", "vztmpl", "snippets", "import"]
   disable = false
   nodes   = []
   shared  = false

@@ -15,6 +15,12 @@ variable "proxmox_node_name" {
   default     = "proxmox"
 }
 
+variable "proxmox_ssh_username" {
+  type        = string
+  description = "SSH username used by the Proxmox provider for node-side operations (snippets, some image imports)"
+  default     = "root"
+}
+
 variable "proxmox_dns_domain" {
   type        = string
   description = "DNS search domain configured on the node"
