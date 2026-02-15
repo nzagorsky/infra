@@ -52,7 +52,27 @@ output "vm_inventory" {
         vm_id     = proxmox_virtual_environment_vm.vm_501_tailscale_canary.vm_id
         node_name = proxmox_virtual_environment_vm.vm_501_tailscale_canary.node_name
         name      = proxmox_virtual_environment_vm.vm_501_tailscale_canary.name
+
+        ipv4_addresses = proxmox_virtual_environment_vm.vm_501_tailscale_canary.ipv4_addresses
+        ipv6_addresses = proxmox_virtual_environment_vm.vm_501_tailscale_canary.ipv6_addresses
+        primary_ipv4 = try(
+          [
+            for ip in flatten(proxmox_virtual_environment_vm.vm_501_tailscale_canary.ipv4_addresses) : ip
+            if !(startswith(ip, "127.") || startswith(ip, "169.254."))
+          ][0],
+          null,
+        )
       }
     },
+  )
+}
+
+output "vm_501_tailscale_canary_primary_ipv4" {
+  value = try(
+    [
+      for ip in flatten(proxmox_virtual_environment_vm.vm_501_tailscale_canary.ipv4_addresses) : ip
+      if !(startswith(ip, "127.") || startswith(ip, "169.254."))
+    ][0],
+    null,
   )
 }

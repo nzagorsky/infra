@@ -11,7 +11,7 @@ terraform {
 
     proxmox = {
       source  = "bpg/proxmox"
-      version = "~> 0.84"
+      version = "~> 0.95"
     }
   }
 }

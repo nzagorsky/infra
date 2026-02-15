@@ -73,7 +73,11 @@ resource "proxmox_virtual_environment_vm" "vm_501_tailscale_canary" {
   vm_id     = 501
 
   # Tie VM updates to snippet updates so Proxmox cloud-init gets regenerated.
-  description = "cloud-init user=${proxmox_virtual_environment_file.vm_501_tailscale_canary_user_data.file_modification_date} meta=${proxmox_virtual_environment_file.vm_501_tailscale_canary_meta_data.file_modification_date}"
+  description = format(
+    "cloud-init user=%s meta=%s",
+    coalesce(proxmox_virtual_environment_file.vm_501_tailscale_canary_user_data.file_modification_date, "pending"),
+    coalesce(proxmox_virtual_environment_file.vm_501_tailscale_canary_meta_data.file_modification_date, "pending"),
+  )
 
   acpi                                 = true
   bios                                 = "seabios"
@@ -85,7 +89,7 @@ resource "proxmox_virtual_environment_vm" "vm_501_tailscale_canary" {
   purge_on_destroy                     = true
   reboot_after_update                  = true
   scsi_hardware                        = "virtio-scsi-single"
-  started                              = true
+  started                              = var.vm_501_tailscale_canary_started
   stop_on_destroy                      = true
   tablet_device                        = true
   template                             = false
@@ -94,6 +98,10 @@ resource "proxmox_virtual_environment_vm" "vm_501_tailscale_canary" {
     enabled = true
     trim    = true
     timeout = "15m"
+
+    wait_for_ip {
+      ipv4 = true
+    }
   }
 
   cpu {

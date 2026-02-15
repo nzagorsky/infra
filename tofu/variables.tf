@@ -107,3 +107,9 @@ variable "vm_games_minecraft_mac_address" {
   type        = string
   description = "MAC address for games-minecraft VM NIC"
 }
+
+variable "vm_501_tailscale_canary_started" {
+  type        = bool
+  description = "Whether tailscale-canary VM should be started"
+  default     = true
+}
