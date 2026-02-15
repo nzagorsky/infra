@@ -44,9 +44,9 @@ output "vm_inventory" {
     },
     {
       "500-tailscale" = {
-        vm_id     = proxmox_virtual_environment_vm2.tailscale.id
-        node_name = proxmox_virtual_environment_vm2.tailscale.node_name
-        name      = proxmox_virtual_environment_vm2.tailscale.name
+        vm_id     = proxmox_virtual_environment_vm.vm_500_tailscale.vm_id
+        node_name = proxmox_virtual_environment_vm.vm_500_tailscale.node_name
+        name      = proxmox_virtual_environment_vm.vm_500_tailscale.name
       }
     },
   )
