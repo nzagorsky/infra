@@ -3,6 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helm-repositories.yaml
+  - monitoring-victoriametrics.yaml
   - nfs-storage.yaml
   - smb-storage.yaml
   - cloudflare-ddns.yaml
