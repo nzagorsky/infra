@@ -14,7 +14,7 @@ services:
       CUSTOM_LOOKUP_CMD: "ip route get 1.1.1.1 | awk '{print $7; exit}'"
 
   postgres:
-    image: "postgres:18.1"
+    image: "postgres:18.2"
     container_name: postgres
     restart: unless-stopped
     ports:
