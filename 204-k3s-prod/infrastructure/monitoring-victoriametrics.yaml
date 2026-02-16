@@ -151,7 +151,7 @@ spec:
           args:
             - -promscrape.config=/etc/victoria-metrics/prometheus.yml
             - -storageDataPath=/storage
-            - -retentionPeriod=7d
+            - -retentionPeriod=14d
           ports:
             - name: http
               containerPort: 8428
