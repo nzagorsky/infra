@@ -14,12 +14,5 @@
     "managerFilePatterns": [
       "/^204-k3s-prod\\/infrastructure\\/.*-helmrelease\\.ya?ml$/"
     ]
-  },
-  "packageRules": [
-    {
-      "matchManagers": ["docker-compose", "kubernetes", "flux"],
-      "matchUpdateTypes": ["major"],
-      "dependencyDashboardApproval": true
-    }
-  ]
+  }
 }
