@@ -27,7 +27,6 @@ secrets:
 	kubectl get ns gluetun >/dev/null 2>&1 || kubectl create ns gluetun
 	kubectl get ns vpn >/dev/null 2>&1 || kubectl create ns vpn
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
-	kubectl get ns activepieces >/dev/null 2>&1 || kubectl create ns activepieces
 	kubectl get ns tailscale >/dev/null 2>&1 || kubectl create ns tailscale
 	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
 	: "$${TRANSMISSION_SYNOLOGY_PASSWORD:?TRANSMISSION_SYNOLOGY_PASSWORD is not set}"
@@ -54,11 +53,6 @@ secrets:
 	kubectl -n searxng get secret searxng-secret >/dev/null 2>&1 || \
 		kubectl -n searxng create secret generic searxng-secret \
 			--from-literal=SECRET_KEY="$$(openssl rand -hex 32)"
-	kubectl -n activepieces get secret activepieces-secret >/dev/null 2>&1 || \
-		kubectl -n activepieces create secret generic activepieces-secret \
-			--from-literal=POSTGRES_PASSWORD="$$(openssl rand -hex 32)" \
-			--from-literal=AP_ENCRYPTION_KEY="$$(openssl rand -hex 16)" \
-			--from-literal=AP_JWT_SECRET="$$(openssl rand -hex 32)"
 	kubectl -n tailscale create secret generic tailscale-auth \
 		--from-literal=TS_AUTHKEY="$$TS_AUTHKEY" \
 		--dry-run=client -o yaml | kubectl apply -f -
