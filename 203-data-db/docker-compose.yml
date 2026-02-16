@@ -1,9 +1,23 @@
 services:
+  cloudflare_ddns:
+    image: oznu/cloudflare-ddns:latest
+    container_name: cloudflare_ddns
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: UTC
+      API_KEY: ${CLOUDFLARE_DDNS_KEY:?Error Set cloudflare token}
+      ZONE: ${BASE_DOMAIN:?Set base domain}
+      SUBDOMAIN: "db.lab"
+      PROXIED: "false"
+      RRTYPE: A
+      CUSTOM_LOOKUP_CMD: "ip route get 1.1.1.1 | awk '{print $7; exit}'"
+
   postgres:
     image: "postgres:18.1"
     container_name: postgres
     restart: unless-stopped
-    ports: 
+    ports:
       - 5432:5432
     environment:
       - "POSTGRES_DB=postgres"
