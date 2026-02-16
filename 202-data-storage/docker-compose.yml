@@ -1,0 +1,15 @@
+services:
+  cloudflare_ddns:
+    image: oznu/cloudflare-ddns:latest
+    container_name: cloudflare_ddns
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      TZ: UTC
+      API_KEY: ${CLOUDFLARE_DDNS_KEY:?Error Set cloudflare token}
+      ZONE: ${BASE_DOMAIN:?Set base domain}
+      SUBDOMAIN: "nfs.lab"
+      PROXIED: "false"
+      RRTYPE: A
+      INTERFACE: "eth0"
+      TTL: "600"

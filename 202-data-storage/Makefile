@@ -9,7 +9,19 @@ endif
 HOST = $(DATA_STORAGE_HOST)
 SSH_PATH = $(INFRA_SSH_USER)@$(HOST)
 
+export DOCKER_HOST := ssh://$(SSH_PATH)
+
 .PHONY: shell init nfs
+
+
+up:
+	docker-compose up -d --remove-orphans
+
+exec:
+	ssh -t $(SSH_PATH) docker exec -it cloudflare_ddns sh
+
+logs:
+	docker-compose logs
 
 shell:
 	ssh $(SSH_PATH)
