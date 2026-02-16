@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: crawl4ai
-          image: unclecode/crawl4ai:latest
+          image: unclecode/crawl4ai:0.8.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

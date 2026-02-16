@@ -65,7 +65,7 @@ spec:
               containerPort: 8888
               protocol: TCP
         - name: ping
-          image: busybox
+          image: busybox:1.37.0
           command:
             - sh
             - -c
@@ -77,7 +77,7 @@ spec:
               echo "ping succesfull, exiting"
       containers:
         - name: curlpod
-          image: curlimages/curl
+          image: curlimages/curl:8.18.0
           args:
             - /bin/sh
             - -c
