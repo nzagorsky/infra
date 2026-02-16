@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "dependencyDashboard": true,
+  "prConcurrentLimit": 5,
+  "enabledManagers": ["docker-compose", "kubernetes", "flux"],
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/^204-k3s-prod\\/(manifests|infrastructure)\\/.*\\.ya?ml$/"
+    ]
+  },
+  "flux": {
+    "managerFilePatterns": [
+      "/^204-k3s-prod\\/infrastructure\\/.*-helmrelease\\.ya?ml$/"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["docker-compose", "kubernetes", "flux"],
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
+  ]
+}
