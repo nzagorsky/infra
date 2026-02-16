@@ -29,6 +29,7 @@ secrets:
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
 	kubectl get ns activepieces >/dev/null 2>&1 || kubectl create ns activepieces
 	kubectl get ns tailscale >/dev/null 2>&1 || kubectl create ns tailscale
+	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
 	: "$${TRANSMISSION_SYNOLOGY_PASSWORD:?TRANSMISSION_SYNOLOGY_PASSWORD is not set}"
 	: "$${TRANSMISSION_PROTONVPN_KEY:?TRANSMISSION_PROTONVPN_KEY is not set}"
 	: "$${CLOUDFLARE_DDNS_KEY:?CLOUDFLARE_DDNS_KEY is not set}"
@@ -43,6 +44,9 @@ secrets:
 		--dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n cert-manager create secret generic cloudflare-api-token-secret \
 	  --from-literal=api-token="$$CLOUDFLARE_DDNS_KEY" \
+	  --dry-run=client -o yaml | kubectl apply -f -
+	kubectl -n cloudflare-ddns create secret generic cloudflare-ddns \
+	  --from-literal=API_KEY="$$CLOUDFLARE_DDNS_KEY" \
 	  --dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n gluetun create secret generic gluetun-secret \
 		--from-literal=WIREGUARD_PRIVATE_KEY="$$PROTONVPN_SCRAPING_KEY" \

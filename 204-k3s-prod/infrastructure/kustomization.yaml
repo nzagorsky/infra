@@ -5,6 +5,7 @@ resources:
   - helm-repositories.yaml
   - nfs-storage.yaml
   - smb-storage.yaml
+  - cloudflare-ddns.yaml
   - cert-manager.yaml
   - csi-driver-nfs-helmrelease.yaml
   - csi-driver-smb-helmrelease.yaml
