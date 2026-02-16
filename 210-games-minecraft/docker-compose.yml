@@ -72,7 +72,7 @@ services:
 
   s3fs:
     container_name: s3fs
-    image: efrecon/s3fs:1.91
+    image: efrecon/s3fs:1.95
     restart: unless-stopped
     cap_add:
       - SYS_ADMIN
