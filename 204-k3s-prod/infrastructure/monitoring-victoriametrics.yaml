@@ -146,7 +146,7 @@ spec:
       serviceAccountName: victoria-metrics
       containers:
         - name: victoria-metrics
-          image: victoriametrics/victoria-metrics:v1.135.0
+          image: victoriametrics/victoria-metrics:v1.136.0
           imagePullPolicy: IfNotPresent
           args:
             - -promscrape.config=/etc/victoria-metrics/prometheus.yml
