@@ -85,7 +85,7 @@ spec:
           imagePullPolicy: Always
 
         - name: transmission
-          image: linuxserver/transmission:4.0.6
+          image: linuxserver/transmission:4.1.0
           env:
             - name: DOCKER_MODS
               value: "linuxserver/mods:transmission-floodui"
