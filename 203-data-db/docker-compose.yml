@@ -26,7 +26,32 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
 
+  opensearch:
+    image: opensearchproject/opensearch:3.5.0
+    container_name: opensearch
+    restart: unless-stopped
+    ports:
+      - 9200:9200
+      - 9600:9600
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - DISABLE_SECURITY_PLUGIN=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
 volumes:
   postgres_data:
     driver: local
     name: postgres_data
+  opensearch_data:
+    driver: local
+    name: opensearch_data
