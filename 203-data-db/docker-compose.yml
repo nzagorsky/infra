@@ -48,6 +48,36 @@ services:
     volumes:
       - opensearch_data:/usr/share/opensearch/data
 
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:3.5.0
+    container_name: opensearch-dashboards
+    restart: unless-stopped
+    depends_on:
+      - opensearch
+    environment:
+      - OPENSEARCH_HOSTS=["http://opensearch:9200"]
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+      - SERVER_HOST=0.0.0.0
+
+  caddy:
+    image: ghcr.io/caddy-dns/cloudflare:latest
+    container_name: caddy
+    restart: unless-stopped
+    depends_on:
+      - opensearch-dashboards
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      ACME_EMAIL: ${ACME_EMAIL:?Error Set ACME email}
+      CF_API_TOKEN: ${CLOUDFLARE_DDNS_KEY:?Error Set cloudflare token}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    configs:
+      - source: caddyfile
+        target: /etc/caddy/Caddyfile
+
 volumes:
   postgres_data:
     driver: local
@@ -55,3 +85,25 @@ volumes:
   opensearch_data:
     driver: local
     name: opensearch_data
+  caddy_data:
+    driver: local
+    name: caddy_data
+  caddy_config:
+    driver: local
+    name: caddy_config
+
+configs:
+  caddyfile:
+    content: |
+      {
+        email $ACME_EMAIL
+      }
+
+      db.lab.${BASE_DOMAIN:?Set base domain} {
+        tls {
+          dns cloudflare {env.CF_API_TOKEN}
+          resolvers 1.1.1.1
+        }
+
+        reverse_proxy opensearch-dashboards:5601
+      }

@@ -11,7 +11,7 @@ export DOCKER_HOST := ssh://$(SSH_PATH)
 SHELL := /bin/bash
 
 up:
-	docker compose up -d --remove-orphans
+	docker-compose up -d --remove-orphans
 
 logs:
 	ssh $(SSH_PATH) docker logs -f minecraft
@@ -20,7 +20,7 @@ shell:
 	ssh $(SSH_PATH)
 
 down:
-	docker compose down
+	docker-compose down
 
 init:
 	ssh $(SSH_PATH) 'sudo apt-get update && sudo apt-get upgrade -y && sudo apt-get install -y docker.io qemu-guest-agent avahi-daemon && sudo gpasswd -a nzagorsky docker && sudo systemctl enable --now qemu-guest-agent'
