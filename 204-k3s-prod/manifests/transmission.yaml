@@ -29,9 +29,9 @@ spec:
         - name: transmission-config
           persistentVolumeClaim:
             claimName: transmission-config
-        - name: synology-media
+        - name: synology-media-nfs
           persistentVolumeClaim:
-            claimName: synology-media
+            claimName: synology-media-nfs
 
       initContainers:
         - name: gluetun
@@ -104,9 +104,9 @@ spec:
           volumeMounts:
             - name: transmission-config
               mountPath: /config
-            - name: synology-media
+            - name: synology-media-nfs
               mountPath: /media
-            - name: synology-media
+            - name: synology-media-nfs
               mountPath: /downloads
           readinessProbe:
             tcpSocket:

@@ -12,3 +12,4 @@ resources:
   - csi-driver-smb-helmrelease.yaml
   - cert-manager-helmrelease.yaml
   - reflector-helmrelease.yaml
+  - nfs-media-storage.yaml
