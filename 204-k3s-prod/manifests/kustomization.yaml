@@ -8,3 +8,4 @@ resources:
   - searxng.yaml
   - crawl4ai.yaml
   - sonarr.yaml
+  - jackett.yaml
