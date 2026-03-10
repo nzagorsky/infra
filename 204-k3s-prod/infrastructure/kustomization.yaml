@@ -5,7 +5,6 @@ resources:
   - helm-repositories.yaml
   - monitoring-victoriametrics.yaml
   - nfs-storage.yaml
-  - smb-storage.yaml
   - cloudflare-ddns.yaml
   - cert-manager.yaml
   - csi-driver-nfs-helmrelease.yaml
