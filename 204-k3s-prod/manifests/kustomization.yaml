@@ -9,3 +9,6 @@ resources:
   - crawl4ai.yaml
   - sonarr.yaml
   - jackett.yaml
+  - prowlarr.yaml
+  - lidarr.yaml
+  - radarr.yaml
