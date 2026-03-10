@@ -8,7 +8,6 @@ resources:
   - cloudflare-ddns.yaml
   - cert-manager.yaml
   - csi-driver-nfs-helmrelease.yaml
-  - csi-driver-smb-helmrelease.yaml
   - cert-manager-helmrelease.yaml
   - reflector-helmrelease.yaml
   - nfs-media-storage.yaml

@@ -29,15 +29,10 @@ secrets:
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
 	kubectl get ns tailscale >/dev/null 2>&1 || kubectl create ns tailscale
 	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
-	: "$${TRANSMISSION_SYNOLOGY_PASSWORD:?TRANSMISSION_SYNOLOGY_PASSWORD is not set}"
 	: "$${TRANSMISSION_PROTONVPN_KEY:?TRANSMISSION_PROTONVPN_KEY is not set}"
 	: "$${CLOUDFLARE_DDNS_KEY:?CLOUDFLARE_DDNS_KEY is not set}"
 	: "$${PROTONVPN_SCRAPING_KEY:?PROTONVPN_SCRAPING_KEY is not set}"
 	: "$${TS_AUTHKEY:?TS_AUTHKEY is not set}"
-	kubectl -n media create secret generic smb-creds \
-		--from-literal=username="transmission" \
-		--from-literal=password="$$TRANSMISSION_SYNOLOGY_PASSWORD" \
-		--dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n media create secret generic gluetun-secret \
 		--from-literal=WIREGUARD_PRIVATE_KEY="$$TRANSMISSION_PROTONVPN_KEY" \
 		--dry-run=client -o yaml | kubectl apply -f -
