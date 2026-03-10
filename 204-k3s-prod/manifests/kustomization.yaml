@@ -7,3 +7,4 @@ resources:
   - proxy.yaml
   - searxng.yaml
   - crawl4ai.yaml
+  - sonarr.yaml
