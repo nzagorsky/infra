@@ -60,7 +60,7 @@ spec:
               mountPath: /config
             - name: jellyfin-cache
               mountPath: /cache
-            - name: synology-media
+            - name: synology-media-nfs
               mountPath: /data/media
               readOnly: true
       volumes:
@@ -70,9 +70,9 @@ spec:
         - name: jellyfin-cache
           persistentVolumeClaim:
             claimName: jellyfin-cache
-        - name: synology-media
+        - name: synology-media-nfs
           persistentVolumeClaim:
-            claimName: synology-media
+            claimName: synology-media-nfs
 
 ---
 apiVersion: v1
