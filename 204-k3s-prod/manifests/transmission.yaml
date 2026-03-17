@@ -51,7 +51,6 @@ spec:
                 secretKeyRef:
                   name: gluetun-secret
                   key: WIREGUARD_PRIVATE_KEY
-
             - name: UPDATER_PERIOD
               value: "24h"
             - name: PORT_FORWARD_ONLY

@@ -17,7 +17,7 @@ pull-config:
 	ssh $(SSH_PATH) "sudo cat /etc/rancher/k3s/k3s.yaml | sed 's/127.0.0.1/$(HOST)/g'" > ~/.config/kube/prod
 
 init:
-	ssh $(SSH_PATH) "sudo apt-get install -y qemu-guest-agent avahi-daemon && sudo systemctl enable --now qemu-guest-agent && printf '%s\n' 'net.ipv4.ip_forward=1' 'net.ipv6.conf.all.forwarding=1' 'net.ipv4.conf.all.rp_filter=0' 'net.ipv4.conf.default.rp_filter=0' 'net.ipv4.conf.all.src_valid_mark=1' | sudo tee /etc/sysctl.d/99-tailscale.conf >/dev/null && sudo sysctl --system"
+	ssh $(SSH_PATH) "sudo apt-get install -y qemu-guest-agent avahi-daemon && sudo systemctl enable --now qemu-guest-agent && printf '%s\n' 'net.ipv4.ip_forward=1' 'net.ipv6.conf.all.forwarding=1' 'net.ipv4.conf.all.rp_filter=0' 'net.ipv4.conf.default.rp_filter=0' 'net.ipv4.conf.all.src_valid_mark=1'"
 
 shell:
 	ssh $(SSH_PATH)
@@ -27,10 +27,11 @@ secrets:
 	kubectl get ns gluetun >/dev/null 2>&1 || kubectl create ns gluetun
 	kubectl get ns vpn >/dev/null 2>&1 || kubectl create ns vpn
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
-	kubectl get ns tailscale >/dev/null 2>&1 || kubectl create ns tailscale
 	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
 	: "$${TRANSMISSION_PROTONVPN_KEY:?TRANSMISSION_PROTONVPN_KEY is not set}"
 	: "$${CLOUDFLARE_DDNS_KEY:?CLOUDFLARE_DDNS_KEY is not set}"
+	: "$${PROTONVPN_OPENVPN_USER:?PROTONVPN_OPENVPN_USER is not set}"
+	: "$${PROTONVPN_OPENVPN_PASSWORD:?PROTONVPN_OPENVPN_PASSWORD is not set}"
 	: "$${PROTONVPN_SCRAPING_KEY:?PROTONVPN_SCRAPING_KEY is not set}"
 	: "$${TS_AUTHKEY:?TS_AUTHKEY is not set}"
 	kubectl -n media create secret generic gluetun-secret \
@@ -48,9 +49,6 @@ secrets:
 	kubectl -n searxng get secret searxng-secret >/dev/null 2>&1 || \
 		kubectl -n searxng create secret generic searxng-secret \
 			--from-literal=SECRET_KEY="$$(openssl rand -hex 32)"
-	kubectl -n tailscale create secret generic tailscale-auth \
-		--from-literal=TS_AUTHKEY="$$TS_AUTHKEY" \
-		--dry-run=client -o yaml | kubectl apply -f -
 
 bootstrap:
 	flux bootstrap git --url=https://github.com/nzagorsky/infra.git --branch=master --path=204-k3s-prod
