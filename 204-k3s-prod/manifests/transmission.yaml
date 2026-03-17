@@ -58,6 +58,11 @@ spec:
               value: "on"
             - name: VPN_PORT_FORWARDING
               value: "on"
+            - name: VPN_PORT_FORWARDING_PROVIDER
+              value: "protonvpn"
+            - name: VPN_PORT_FORWARDING_UP_COMMAND
+              value: >-
+                /bin/sh -c 'i=0; while [ "$i" -lt 60 ]; do i=$((i+1)); SID=$(wget -S -O- --post-data "{\"method\":\"session-get\"}" http://127.0.0.1:9091/transmission/rpc 2>&1 | sed -n "s/^  X-Transmission-Session-Id: //p" | tr -d "\r\n"); if [ -n "$SID" ]; then wget -qO- --header="X-Transmission-Session-Id: $SID" --post-data "{\"method\":\"session-set\",\"arguments\":{\"peer-port\":{{PORT}},\"peer-port-random-on-start\":false,\"port-forwarding-enabled\":true}}" http://127.0.0.1:9091/transmission/rpc && exit 0; fi; sleep 2; done; echo "failed to sync forwarded port to transmission" >&2; exit 1'
             - name: DNS_ADDRESS
               value: "1.1.1.1"
           ports:
@@ -82,6 +87,20 @@ spec:
             - /bin/sh
             - -c
             - while true; do curl -s 4.ident.me; echo; sleep 15; done
+          imagePullPolicy: Always
+
+        - name: gluetun-rotator
+          image: curlimages/curl:8.18.0
+          args:
+            - /bin/sh
+            - -c
+            - |
+              while true; do
+                sleep 43200
+                curl -fsS -X PUT -H "Content-Type: application/json" -d '{"status":"stopped"}' http://127.0.0.1:8000/v1/vpn/status >/dev/null || true
+                sleep 5
+                curl -fsS -X PUT -H "Content-Type: application/json" -d '{"status":"running"}' http://127.0.0.1:8000/v1/vpn/status >/dev/null || true
+              done
           imagePullPolicy: Always
 
         - name: transmission
