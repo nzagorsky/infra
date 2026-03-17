@@ -1,6 +1,6 @@
 ```shell
 source bwunlock
-source <(bw get notes homelab_prod)
+source <(bw get notes homelab)
 
 make up
 ```
