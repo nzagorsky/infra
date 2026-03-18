@@ -45,12 +45,17 @@ spec:
             - name: VPN_SERVICE_PROVIDER
               value: "protonvpn"
             - name: VPN_TYPE
-              value: "wireguard"
-            - name: WIREGUARD_PRIVATE_KEY
+              value: "openvpn"
+            - name: OPENVPN_USER
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
-                  key: WIREGUARD_PRIVATE_KEY
+                  key: OPENVPN_USER
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-secret
+                  key: OPENVPN_PASSWORD
 
             - name: UPDATER_PERIOD
               value: "24h"

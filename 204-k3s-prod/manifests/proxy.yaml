@@ -29,7 +29,7 @@ spec:
             - name: VPN_SERVICE_PROVIDER
               value: protonvpn
             - name: VPN_TYPE
-              value: wireguard
+              value: openvpn
             - name: UPDATER_PERIOD
               value: 12h
             - name: HTTPPROXY
@@ -38,11 +38,16 @@ spec:
               value: "8888"
             - name: DNS_ADDRESS
               value: "1.1.1.1"
-            - name: WIREGUARD_PRIVATE_KEY
+            - name: OPENVPN_USER
               valueFrom:
                 secretKeyRef:
                   name: gluetun-secret
-                  key: WIREGUARD_PRIVATE_KEY
+                  key: OPENVPN_USER
+            - name: OPENVPN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gluetun-secret
+                  key: OPENVPN_PASSWORD
           ports:
             - name: http-proxy
               containerPort: 8888
