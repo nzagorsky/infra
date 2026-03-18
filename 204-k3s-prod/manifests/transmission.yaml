@@ -50,8 +50,6 @@ spec:
                 secretKeyRef:
                   name: gluetun-secret
                   key: WIREGUARD_PRIVATE_KEY
-            - name: DNS_ADDRESS
-              value: "1.1.1.1"
           ports:
             - name: http-proxy
               containerPort: 8888
