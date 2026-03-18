@@ -55,23 +55,23 @@ spec:
               containerPort: 8888
               protocol: TCP
         - name: ping
-          image: busybox:1.37.0
+          image: curlimages/curl:8.18.0
           command:
             - sh
             - -c
             - |
-              while ! ping -c 1 1.1.1.1; do
-                echo "Ping failed, retrying in 5"
-                sleep 5
+              while ! curl -m 1 -s 4.ident.me; do
+                echo "Probe failed, retrying"
+                sleep 1
               done
-              echo "ping succesfull, exiting"
+              echo "probe succesfull, exiting"
       containers:
         - name: curlpod
           image: curlimages/curl:8.18.0
           args:
             - /bin/sh
             - -c
-            - while true; do curl -s 4.ident.me; echo; sleep 15; done
+            - while true; do curl -m 1 -s 4.ident.me; echo; sleep 5; done
           imagePullPolicy: Always
 
         - name: transmission
