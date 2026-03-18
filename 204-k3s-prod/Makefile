@@ -28,14 +28,14 @@ secrets:
 	kubectl get ns vpn >/dev/null 2>&1 || kubectl create ns vpn
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
 	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
-	: "$${TRANSMISSION_PROTONVPN_KEY:?TRANSMISSION_PROTONVPN_KEY is not set}"
 	: "$${CLOUDFLARE_DDNS_KEY:?CLOUDFLARE_DDNS_KEY is not set}"
-	: "$${PROTONVPN_OPENVPN_USER:?PROTONVPN_OPENVPN_USER is not set}"
-	: "$${PROTONVPN_OPENVPN_PASSWORD:?PROTONVPN_OPENVPN_PASSWORD is not set}"
-	: "$${PROTONVPN_SCRAPING_KEY:?PROTONVPN_SCRAPING_KEY is not set}"
+	: "$${PROTONVPN_WIREGUARD_KEY:?PROTONVPN_WIREGUARD_KEY is not set}"
 	: "$${TS_AUTHKEY:?TS_AUTHKEY is not set}"
 	kubectl -n media create secret generic gluetun-secret \
-		--from-literal=WIREGUARD_PRIVATE_KEY="$$TRANSMISSION_PROTONVPN_KEY" \
+		--from-literal=WIREGUARD_PRIVATE_KEY="$$PROTONVPN_WIREGUARD_KEY" \
+		--dry-run=client -o yaml | kubectl apply -f -
+	kubectl -n gluetun create secret generic gluetun-secret \
+		--from-literal=WIREGUARD_PRIVATE_KEY="$$PROTONVPN_WIREGUARD_KEY" \
 		--dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n cert-manager create secret generic cloudflare-api-token-secret \
 	  --from-literal=api-token="$$CLOUDFLARE_DDNS_KEY" \
@@ -43,9 +43,6 @@ secrets:
 	kubectl -n cloudflare-ddns create secret generic cloudflare-ddns \
 	  --from-literal=API_KEY="$$CLOUDFLARE_DDNS_KEY" \
 	  --dry-run=client -o yaml | kubectl apply -f -
-	kubectl -n gluetun create secret generic gluetun-secret \
-		--from-literal=WIREGUARD_PRIVATE_KEY="$$PROTONVPN_SCRAPING_KEY" \
-		--dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n searxng get secret searxng-secret >/dev/null 2>&1 || \
 		kubectl -n searxng create secret generic searxng-secret \
 			--from-literal=SECRET_KEY="$$(openssl rand -hex 32)"
