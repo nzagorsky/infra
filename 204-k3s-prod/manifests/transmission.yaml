@@ -50,12 +50,6 @@ spec:
                 secretKeyRef:
                   name: gluetun-secret
                   key: WIREGUARD_PRIVATE_KEY
-            - name: UPDATER_PERIOD
-              value: "24h"
-            - name: PORT_FORWARD_ONLY
-              value: "on"
-            - name: VPN_PORT_FORWARDING
-              value: "on"
             - name: DNS_ADDRESS
               value: "1.1.1.1"
           ports:
