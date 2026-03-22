@@ -4,6 +4,7 @@
   "labels": ["dependencies"],
   "dependencyDashboard": false,
   "prConcurrentLimit": 5,
+  "minimumReleaseAge": "14 days",
   "enabledManagers": ["docker-compose", "kubernetes", "flux"],
   "kubernetes": {
     "managerFilePatterns": [
