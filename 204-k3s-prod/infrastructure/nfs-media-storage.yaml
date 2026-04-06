@@ -17,7 +17,7 @@ spec:
     volumeHandle: nas.lab.${BASE_DOMAIN:=example.com}#/volume4/media#
     volumeAttributes:
       server: nas.lab.${BASE_DOMAIN:=example.com}
-      share: /volume4/media
+      share: /volume3/media
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
