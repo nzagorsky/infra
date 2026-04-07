@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
         - name: searxng
-          image: docker.io/searxng/searxng:2026.4.6-e12b722dd
+          image: docker.io/searxng/searxng:2026.4.5-474b0a55b
           imagePullPolicy: IfNotPresent
           env:
             - name: SEARXNG_BASE_URL
