@@ -77,7 +77,7 @@ data:
         shortcut: hn
         disabled: false
     outgoing:
-      request_timeout: 10.0
+      request_timeout: 4.0
       pool_connections: 200
       pool_maxsize: 50
       proxies:
@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
         - name: searxng
-          image: docker.io/searxng/searxng:2026.2.15-da9c0815a
+          image: docker.io/searxng/searxng:2026.4.6-e12b722dd
           imagePullPolicy: IfNotPresent
           env:
             - name: SEARXNG_BASE_URL
