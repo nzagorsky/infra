@@ -28,14 +28,9 @@ secrets:
 	kubectl get ns vpn >/dev/null 2>&1 || kubectl create ns vpn
 	kubectl get ns searxng >/dev/null 2>&1 || kubectl create ns searxng
 	kubectl get ns cloudflare-ddns >/dev/null 2>&1 || kubectl create ns cloudflare-ddns
-	kubectl get ns airflow >/dev/null 2>&1 || kubectl create ns airflow
 	: "$${CLOUDFLARE_DDNS_KEY:?CLOUDFLARE_DDNS_KEY is not set}"
 	: "$${PROTONVPN_OPENVPN_USER:?PROTONVPN_OPENVPN_USER is not set}"
 	: "$${PROTONVPN_OPENVPN_PASSWORD:?PROTONVPN_OPENVPN_PASSWORD is not set}"
-	: "$${TS_AUTHKEY:?TS_AUTHKEY is not set}"
-	: "$${AIRFLOW_POSTGRES_PASSWORD:?AIRFLOW_POSTGRES_PASSWORD is not set}"
-	: "$${AIRFLOW_WEBSERVER_SECRET:?AIRFLOW_WEBSERVER_SECRET is not set}"
-	: "$${AIRFLOW_POSTGRES_STRING:?AIRFLOW_POSTGRES_STRING is not set}"
 	kubectl -n media create secret generic gluetun-secret \
 		--from-literal=OPENVPN_USER="$$PROTONVPN_OPENVPN_USER" \
 		--from-literal=OPENVPN_PASSWORD="$$PROTONVPN_OPENVPN_PASSWORD" \
@@ -53,11 +48,6 @@ secrets:
 	kubectl -n searxng get secret searxng-secret >/dev/null 2>&1 || \
 		kubectl -n searxng create secret generic searxng-secret \
 			--from-literal=SECRET_KEY="$$(openssl rand -hex 32)"
-	kubectl -n airflow create secret generic airflow-secret \
-		--from-literal=postgres-password="$$AIRFLOW_POSTGRES_PASSWORD" \
-		--from-literal=webserver-secret="$$AIRFLOW_WEBSERVER_SECRET" \
-		--from-literal=postgres-string="$$AIRFLOW_POSTGRES_STRING" \
-		--dry-run=client -o yaml | kubectl apply -f -
 
 bootstrap:
 	flux bootstrap git --url=https://github.com/nzagorsky/infra.git --branch=master --path=204-k3s-prod
