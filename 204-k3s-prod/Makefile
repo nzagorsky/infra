@@ -35,6 +35,7 @@ secrets:
 	: "$${TS_AUTHKEY:?TS_AUTHKEY is not set}"
 	: "$${AIRFLOW_POSTGRES_PASSWORD:?AIRFLOW_POSTGRES_PASSWORD is not set}"
 	: "$${AIRFLOW_WEBSERVER_SECRET:?AIRFLOW_WEBSERVER_SECRET is not set}"
+	: "$${AIRFLOW_POSTGRES_STRING:?AIRFLOW_POSTGRES_STRING is not set}"
 	kubectl -n media create secret generic gluetun-secret \
 		--from-literal=OPENVPN_USER="$$PROTONVPN_OPENVPN_USER" \
 		--from-literal=OPENVPN_PASSWORD="$$PROTONVPN_OPENVPN_PASSWORD" \
@@ -55,6 +56,7 @@ secrets:
 	kubectl -n airflow create secret generic airflow-secret \
 		--from-literal=postgres-password="$$AIRFLOW_POSTGRES_PASSWORD" \
 		--from-literal=webserver-secret="$$AIRFLOW_WEBSERVER_SECRET" \
+		--from-literal=postgres-string="$$AIRFLOW_POSTGRES_STRING" \
 		--dry-run=client -o yaml | kubectl apply -f -
 
 bootstrap:

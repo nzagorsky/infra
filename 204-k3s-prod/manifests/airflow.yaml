@@ -122,7 +122,10 @@ spec:
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@db.lab.${BASE_DOMAIN:=example.com}:5432/airflow
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secret
+                  key: postgres-string
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -166,7 +169,10 @@ spec:
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@db.lab.${BASE_DOMAIN:=example.com}:5432/airflow
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secret
+                  key: postgres-string
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -192,7 +198,10 @@ spec:
               exec airflow triggerer
           env:
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
-              value: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD}@db.lab.${BASE_DOMAIN:=example.com}:5432/airflow
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secret
+                  key: postgres-string
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
