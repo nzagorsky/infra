@@ -152,10 +152,8 @@ spec:
           resources:
             requests:
               memory: 1Gi
-              cpu: 500m
             limits:
               memory: 2Gi
-              cpu: 1000m
         - name: scheduler
           image: apache/airflow:2.10.4
           imagePullPolicy: IfNotPresent
@@ -182,10 +180,8 @@ spec:
           resources:
             requests:
               memory: 1Gi
-              cpu: 500m
             limits:
               memory: 2Gi
-              cpu: 1000m
         - name: triggerer
           image: apache/airflow:2.10.4
           imagePullPolicy: IfNotPresent
@@ -210,10 +206,8 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 250m
             limits:
               memory: 1Gi
-              cpu: 500m
       volumes:
         - name: dags
           persistentVolumeClaim:
