@@ -107,7 +107,7 @@ spec:
                   key: postgres-password
       containers:
         - name: webserver
-          image: apache/airflow:2.10.4
+          image: apache/airflow:2.11.2
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -157,7 +157,7 @@ spec:
               memory: 2Gi
               cpu: 1000m
         - name: scheduler
-          image: apache/airflow:2.10.4
+          image: apache/airflow:2.11.2
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -187,7 +187,7 @@ spec:
               memory: 2Gi
               cpu: 1000m
         - name: triggerer
-          image: apache/airflow:2.10.4
+          image: apache/airflow:2.11.2
           imagePullPolicy: IfNotPresent
           command:
             - bash
