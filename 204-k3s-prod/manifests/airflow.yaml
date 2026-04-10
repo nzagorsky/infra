@@ -121,6 +121,8 @@ spec:
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
+            - name: AIRFLOW__KUBERNETES_NAMESPACE
+              value: airflow
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
               valueFrom:
                 secretKeyRef:
@@ -168,6 +170,8 @@ spec:
           env:
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
+            - name: AIRFLOW__KUBERNETES_NAMESPACE
+              value: airflow
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
               valueFrom:
                 secretKeyRef:
@@ -197,6 +201,8 @@ spec:
             - |
               exec airflow triggerer
           env:
+            - name: AIRFLOW__KUBERNETES_NAMESPACE
+              value: airflow
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
               valueFrom:
                 secretKeyRef:
