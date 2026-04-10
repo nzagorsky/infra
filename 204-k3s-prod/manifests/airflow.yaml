@@ -88,7 +88,7 @@ spec:
       serviceAccountName: airflow
       initContainers:
         - name: check-db
-          image: postgres:16
+          image: apache/airflow:3.2.0
           command:
             - sh
             - -c
@@ -99,15 +99,25 @@ spec:
                 sleep 2
               done
               echo "Database ready!"
+              echo "Running database migration..."
+              airflow db migrate
+              echo "Migration complete!"
           env:
+            - name: AIRFLOW_HOME
+              value: /opt/airflow
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: airflow-secret
                   key: postgres-password
+            - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
+              valueFrom:
+                secretKeyRef:
+                  name: airflow-secret
+                  key: postgres-string
       containers:
         - name: webserver
-          image: apache/airflow:2.10.4
+          image: apache/airflow:3.2.0
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -119,6 +129,8 @@ spec:
               containerPort: 8080
               protocol: TCP
           env:
+            - name: AIRFLOW_HOME
+              value: /opt/airflow
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
@@ -160,7 +172,7 @@ spec:
             limits:
               memory: 2Gi
         - name: scheduler
-          image: apache/airflow:2.10.4
+          image: apache/airflow:3.2.0
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -168,6 +180,8 @@ spec:
             - |
               exec airflow scheduler
           env:
+            - name: AIRFLOW_HOME
+              value: /opt/airflow
             - name: AIRFLOW__CORE__EXECUTOR
               value: KubernetesExecutor
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
@@ -193,7 +207,7 @@ spec:
             limits:
               memory: 2Gi
         - name: triggerer
-          image: apache/airflow:2.10.4
+          image: apache/airflow:3.2.0
           imagePullPolicy: IfNotPresent
           command:
             - bash
@@ -201,6 +215,8 @@ spec:
             - |
               exec airflow triggerer
           env:
+            - name: AIRFLOW_HOME
+              value: /opt/airflow
             - name: AIRFLOW__KUBERNETES_EXECUTOR__NAMESPACE
               value: airflow
             - name: AIRFLOW__DATABASE__SQL_ALCHEMY_CONN
