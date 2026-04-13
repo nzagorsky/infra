@@ -35,14 +35,3 @@ spec:
     executor: LocalExecutor
 
     useStandardNaming: true
-
-    ingress:
-      enabled: true
-      web:
-        ingressClassName: traefik
-        hosts:
-          - host: airflow.home.${BASE_DOMAIN:=example.com}
-            http:
-              paths:
-                - path: /
-                  pathType: Prefix
