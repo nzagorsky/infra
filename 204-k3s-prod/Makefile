@@ -59,6 +59,7 @@ cluster-vars:
 		--from-literal=BASE_DOMAIN="$$BASE_DOMAIN" \
 		--from-literal=ACME_EMAIL="$$ACME_EMAIL" \
 		--dry-run=client -o yaml | kubectl apply -f -
+	kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 
 status:
 	flux get all

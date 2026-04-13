@@ -30,8 +30,6 @@ spec:
     migrateDatabaseJob:
       useHelmHooks: false
       applyCustomEnv: false
-    # <----------------------------->
-
+    # <- End must have block ------->
     executor: LocalExecutor
-
     useStandardNaming: true
