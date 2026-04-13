@@ -25,3 +25,12 @@ metadata:
 spec:
   interval: 1h
   url: https://emberstack.github.io/helm-charts
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: airflow
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://airflow.apache.org

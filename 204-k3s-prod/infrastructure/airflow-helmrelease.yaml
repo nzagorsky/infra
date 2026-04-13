@@ -1,0 +1,44 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: airflow
+  namespace: airflow
+spec:
+  interval: 10m
+  releaseName: airflow
+  chart:
+    spec:
+      chart: airflow
+      version: "1.20.0"
+      sourceRef:
+        kind: HelmRepository
+        name: airflow
+        namespace: flux-system
+
+  install:
+    createNamespace: true
+
+  values:
+    # <- Must have block for flux -->
+    createUserJob:
+      useHelmHooks: false
+      applyCustomEnv: false
+    migrateDatabaseJob:
+      useHelmHooks: false
+      applyCustomEnv: false
+    # <----------------------------->
+
+    executor: LocalExecutor
+
+    useStandardNaming: true
+
+    ingress:
+      enabled: true
+      web:
+        ingressClassName: traefik
+        hosts:
+          - host: airflow.home.${BASE_DOMAIN:=example.com}
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
