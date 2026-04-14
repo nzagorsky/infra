@@ -12,4 +12,4 @@ resources:
   - lidarr.yaml
   - radarr.yaml
   - seerr.yaml
-  - airflow-helmrelease.yaml
+  # - airflow-helmrelease.yaml
