@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: actual
-          image: docker.io/actualbudget/actual-server:latest
+          image: docker.io/actualbudget/actual-server:latest-alpine
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
