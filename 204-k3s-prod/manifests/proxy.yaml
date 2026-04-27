@@ -9,7 +9,7 @@ metadata:
   name: gluetun
   namespace: gluetun
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: gluetun
