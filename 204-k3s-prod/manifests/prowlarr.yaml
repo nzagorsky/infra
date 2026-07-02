@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: prowlarr
-          image: ghcr.io/linuxserver/prowlarr:latest
+          image: ghcr.io/linuxserver/prowlarr:2.4.0
           imagePullPolicy: IfNotPresent
           env:
             - name: PUID
