@@ -27,7 +27,7 @@ services:
       - postgres_data:/var/lib/postgresql
 
   opensearch:
-    image: opensearchproject/opensearch:3.5.0
+    image: opensearchproject/opensearch:3.7.0
     container_name: opensearch
     restart: unless-stopped
     ports:
@@ -49,7 +49,7 @@ services:
       - opensearch_data:/usr/share/opensearch/data
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:3.5.0
+    image: opensearchproject/opensearch-dashboards:3.7.0
     container_name: opensearch-dashboards
     restart: unless-stopped
     depends_on:
