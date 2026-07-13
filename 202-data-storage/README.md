@@ -1,4 +1,4 @@
-nfs.lab.example.com:/srv/nfs/k8s (clients from NFS_CLIENT_CIDR)
+nfs.lab.example.com:/srv/nfs/k8s
 
 # Path
 
