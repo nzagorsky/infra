@@ -1,16 +1,4 @@
 services:
-  cloudflare_ddns:
-    image: oznu/cloudflare-ddns:latest
-    container_name: cloudflare_ddns
-    restart: unless-stopped
-    environment:
-      TZ: UTC
-      API_KEY: ${CLOUDFLARE_DDNS_KEY:?Error Set cloudflare token}
-      ZONE: ${BASE_DOMAIN:?Set base domain}
-      SUBDOMAIN: "minecraft"
-      PROXIED: "false"
-      RRTYPE: A
-
   restore-backup:
     container_name: "restore_mc"
     # Same image as mc, but any base image with bash and tar will work
@@ -24,8 +12,8 @@ services:
       - /mnt/minecraft/b2:/backups
 
   backups:
-    image: itzg/mc-backup
     container_name: minecraft_backup
+    image: itzg/mc-backup
     depends_on:
       minecraft:
         condition: service_healthy
@@ -39,10 +27,10 @@ services:
       - /mnt/minecraft/b2:/backups
 
   minecraft:
+    container_name: minecraft
     image: itzg/minecraft-server:2026.6.1-java21
     tty: true
     stdin_open: true
-    container_name: minecraft
     restart: unless-stopped
     depends_on:
       restore-backup:
@@ -88,3 +76,10 @@ services:
       AWS_S3_SECRET_ACCESS_KEY: "${AWS_S3_SECRET_ACCESS_KEY?AWS_S3_SECRET_ACCESS_KEY is required}"
       AWS_S3_URL: "${AWS_S3_URL?AWS_S3_URL is required}"
       AWS_S3_MOUNT: "/opt/s3fs/bucket"
+
+  playit:
+    container_name: playit
+    image: ghcr.io/playit-cloud/playit-agent:0.17
+    network_mode: host
+    environment:
+      SECRET_KEY: "${MINECRAFT_PLAYIT_SECRET?MINECRAFT_PLAYIT_SECRET is required}"
