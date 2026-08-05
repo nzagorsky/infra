@@ -12,5 +12,4 @@ resources:
   - lidarr.yaml
   - radarr.yaml
   - seerr.yaml
-  - actual.yaml
-  # - airflow-helmrelease.yaml
+  - flaresolverr.yaml
