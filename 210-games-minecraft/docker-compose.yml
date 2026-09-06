@@ -28,7 +28,7 @@ services:
 
   minecraft:
     container_name: minecraft
-    image: itzg/minecraft-server:2026.6.1-java21
+    image: itzg/minecraft-server:2026.8.2-java21
     tty: true
     stdin_open: true
     restart: unless-stopped
