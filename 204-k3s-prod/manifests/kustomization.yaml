@@ -13,3 +13,4 @@ resources:
   - radarr.yaml
   - seerr.yaml
   - flaresolverr.yaml
+  - opengym.yaml

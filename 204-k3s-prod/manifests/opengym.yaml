@@ -1,0 +1,356 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opengym
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opengym-data
+  namespace: opengym
+spec:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: opengym-media
+  namespace: opengym
+spec:
+  accessModes: ["ReadWriteMany"]
+  storageClassName: nfs-storage
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: opengym
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  ingress: []
+  egress: []
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traefik
+  namespace: opengym
+spec:
+  podSelector:
+    matchLabels:
+      app: opengym
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+      ports:
+        - protocol: TCP
+          port: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-media-download
+  namespace: opengym
+spec:
+  podSelector:
+    matchLabels:
+      app: opengym-media-download
+  policyTypes: [Egress]
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            # Public IPv4 HTTPS only; no private, loopback, link-local, CGNAT,
+            # documentation, benchmarking, multicast, or reserved destinations.
+            except:
+              - 0.0.0.0/8
+              - 10.0.0.0/8
+              - 100.64.0.0/10
+              - 127.0.0.0/8
+              - 169.254.0.0/16
+              - 172.16.0.0/12
+              - 192.0.0.0/24
+              - 192.0.2.0/24
+              - 192.168.0.0/16
+              - 198.18.0.0/15
+              - 198.51.100.0/24
+              - 203.0.113.0/24
+              - 224.0.0.0/4
+              - 240.0.0.0/4
+      ports:
+        - protocol: TCP
+          port: 443
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: opengym-media-download
+  namespace: opengym
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 1800
+  template:
+    metadata:
+      labels:
+        app: opengym-media-download
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: OnFailure
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: media-download
+          image: docker.io/alpine/git:2.52.0@sha256:4a0e72d49596a1f5d3701aeedafdadc5c0da4062be4657c7bdc4017387f591cc
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              mkdir -p /out/img /out/gif
+              if [ ! -f /out/.download-complete ]; then
+                # Third-party exercise media; see upstream NOTICE.md for licensing.
+                # Clone into a fresh directory so failed Job retries are safe.
+                dataset=$(mktemp -d)
+                git clone --depth 1 https://github.com/hasaneyldrm/exercises-dataset "$${dataset}"
+                cp "$${dataset}"/images/*.jpg /out/img/
+                cp "$${dataset}"/videos/*.gif /out/gif/
+                touch /out/.download-complete
+              fi
+          volumeMounts:
+            - name: opengym-media
+              mountPath: /out
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: opengym-media
+          persistentVolumeClaim:
+            claimName: opengym-media
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opengym
+  namespace: opengym
+spec:
+  # The API stores JSON files: never run overlapping writers, even during updates.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: opengym
+  template:
+    metadata:
+      labels:
+        app: opengym
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-media
+          image: docker.io/alpine/git:2.52.0@sha256:4a0e72d49596a1f5d3701aeedafdadc5c0da4062be4657c7bdc4017387f591cc
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              until [ -f /out/.download-complete ]; do
+                echo "Waiting for the exercise-media bootstrap Job..."
+                sleep 5
+              done
+          volumeMounts:
+            - name: opengym-media
+              mountPath: /out
+              readOnly: true
+      containers:
+        - name: api
+          image: ghcr.io/duartesantos8/opengym-api:1.3.9@sha256:e0232eb55bc193f9d3c6938105e6202114eb02d1dd2a9c2476c7e486435e9aab
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DATA_DIR
+              value: /data
+            - name: RP_ID
+              value: gym.home.${BASE_DOMAIN:=example.invalid}
+            - name: ORIGIN
+              value: https://gym.home.${BASE_DOMAIN:=example.invalid}
+            - name: COACH_DISABLED
+              value: "1"
+            - name: MEDIA_UPLOADS
+              value: "0"
+          ports:
+            - name: api
+              containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - name: opengym-data
+              mountPath: /data
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: api
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+        - name: web
+          # Keep the API and web images on the same release.
+          image: ghcr.io/duartesantos8/opengym-web:1.3.9@sha256:9d19807f28a59a449b26a009f96764fc93fc6ea78b139891ee2010146d7ea792
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+              # nginx's root master prepares cache ownership and drops workers
+              # to its existing nginx user. No networking/admin capabilities.
+              add: [CHOWN, SETUID, SETGID]
+          env:
+            - name: NGINX_PORT
+              value: "8080"
+            # Same-pod loopback avoids nginx's Docker-only DNS resolver default.
+            - name: BACKEND
+              value: "127.0.0.1"
+            - name: PORT
+              value: "3000"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: opengym-media
+              mountPath: /usr/share/nginx/html/img
+              subPath: img
+              readOnly: true
+            - name: opengym-media
+              mountPath: /usr/share/nginx/html/gif
+              subPath: gif
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+      volumes:
+        - name: opengym-data
+          persistentVolumeClaim:
+            claimName: opengym-data
+        - name: opengym-media
+          persistentVolumeClaim:
+            claimName: opengym-media
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opengym
+  namespace: opengym
+spec:
+  selector:
+    app: opengym
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opengym
+  namespace: opengym
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - gym.home.${BASE_DOMAIN:=example.invalid}
+      secretName: wildcard-home-tls
+  rules:
+    - host: gym.home.${BASE_DOMAIN:=example.invalid}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opengym
+                port:
+                  number: 80
